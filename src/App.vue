@@ -1,26 +1,43 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png" />
-  <HelloWorld msg="Welcome to Your Vue.js App" />
+	<button @click="openPopup">Открыть окно</button>
+
+	<Popup ref="confirmationPopup">
+		Вы действительно хотите освоить правильные подходы к проектированию систем
+		во Vue?
+		<template #actions="{ confirm }">
+			Напишите
+			<input :placeholder="$options.CONFIRMATION_TEXT" v-model="confirmation"/>
+			&nbsp;
+			<button @click="confirm" :disabled="isConfirmationCorrect">OK</button>
+		</template>
+	</Popup>
 </template>
 
 <script>
-import HelloWorld from "./components/HelloWorld.vue";
+import Popup from './components/Popup.vue';
 
 export default {
-  name: "App",
-  components: {
-    HelloWorld,
-  },
+	components: { Popup },
+	data() {
+		return {
+			confirmation: ''
+		};
+	},
+	CONFIRMATION_TEXT: 'ПОДТВЕРЖДАЮ',
+	computed: {
+		isConfirmationCorrect() {
+			return this.confirmation === this.$options.CONFIRMATION_TEXT;
+		}
+	},
+	methods: {
+		async openPopup() {
+			this.confirmation = '';
+			const popupResult = await this.$refs.confirmationPopup.open();
+
+			if (popupResult) {
+				alert('Confirmed!');
+			}
+		},
+	}
 };
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
